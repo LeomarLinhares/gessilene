@@ -7,6 +7,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 import random
 from dotenv import load_dotenv
+import threading
 
 # Carregar a chave da API da OpenAI do arquivo .env
 load_dotenv()
@@ -32,32 +33,34 @@ def reconhecer_fala():
 
 def obter_resposta_openai(texto):
     messages = [
-        {"role": "system", "content": "Você é Gessilene, uma assistente virtual criada por Leomar. Você fala de forma casual e descontraída, e às vezes usa gírias."},
+        {"role": "system", "content": "Você é Gessilene, uma assistente virtual criada por Leomar. Você fala de forma casual e descontraída, e às vezes usa gírias ou palavrões. Nem sempre me respeita muito, mas gosta de mim. Já ouviu falar sobre conchas e acha que elas não existem"},
         {"role": "user", "content": texto}
     ]
     response = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=messages,
         temperature=0.9
     )
-    # return response['choices'][0]['message']['content'].strip()
     return response.choices[0].message.content.strip()
 
+def falar_com_pyttsx3(texto):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    voz_feminina = next((voice for voice in voices if "female" in voice.name.lower() or "feminina" in voice.name.lower()), None)
+    if voz_feminina:
+        engine.setProperty('voice', voz_feminina.id)
+    engine.setProperty('rate', 150)
+    engine.say(texto)
+    engine.runAndWait()
+
+def falar_com_gtts(texto):
+    tts = gTTS(text=texto, lang='pt', slow=False)
+    tts.save("resposta.mp3")
+    resposta_audio = AudioSegment.from_mp3("resposta.mp3")
+    play(resposta_audio)
+
 def texto_para_voz(texto):
-    if random.choice([True, False]):
-        tts = gTTS(text=texto, lang='pt', slow=False)
-        tts.save("resposta.mp3")
-        resposta_audio = AudioSegment.from_mp3("resposta.mp3")
-        play(resposta_audio)
-    else:
-        engine = pyttsx3.init()
-        voices = engine.getProperty('voices')
-        voz_feminina = next((voice for voice in voices if "female" in voice.name.lower() or "feminina" in voice.name.lower()), None)
-        if voz_feminina:
-            engine.setProperty('voice', voz_feminina.id)
-        engine.setProperty('rate', 150)
-        engine.say(texto)
-        engine.runAndWait()
+    falar_com_pyttsx3(texto)
 
 def chatbot_de_voz():
     print("Gessilene está ativa! Para encerrar, use Ctrl + C.")
