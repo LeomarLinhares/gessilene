@@ -1,0 +1,35 @@
+# Arquivos de ambiente virtual
+.venv/
+venv/
+
+# Arquivos de configuração e credenciais
+.env
+
+# Arquivos de cache e configurações do Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+*.pyo
+*.pyd
+*.pdb
+
+# Arquivos de áudio gerados
+*.mp3
+*.wav
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Configurações de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
